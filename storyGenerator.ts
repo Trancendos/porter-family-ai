@@ -428,9 +428,18 @@ export async function seedDigitalTwinStories(
 ): Promise<{
   epicsCreated: number;
   storiesCreated: number;
+  duplicatesSkipped: number;
 }> {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
+
+  // Check for existing epics to avoid duplicates
+  const existingEpics = await db.select().from(epics);
+  const existingEpicTitles = new Set(existingEpics.map(e => e.title));
+
+  // Check for existing stories to avoid duplicates
+  const existingStories = await db.select().from(agileBacklog);
+  const existingStoryTitles = new Set(existingStories.map(s => s.title));
 
   // Group stories by epic
   const epicGroups = new Map<string, UserStoryTemplate[]>();
@@ -443,22 +452,38 @@ export async function seedDigitalTwinStories(
 
   let epicsCreated = 0;
   let storiesCreated = 0;
+  let duplicatesSkipped = 0;
 
   // Create epics and their stories
   for (const [epicTitle, stories] of Array.from(epicGroups.entries())) {
-    const epicId = await createEpic(
-      userId,
-      epicTitle,
-      `Epic for ${epicTitle} functionality in Digital Twin system`,
-      ["digital-twin", "phase-23"]
-    );
-    epicsCreated++;
+    let epicId: number;
+
+    // Check if epic already exists
+    if (existingEpicTitles.has(epicTitle)) {
+      const existingEpic = existingEpics.find(e => e.title === epicTitle);
+      epicId = existingEpic!.id;
+      duplicatesSkipped++;
+    } else {
+      epicId = await createEpic(
+        userId,
+        epicTitle,
+        `Epic for ${epicTitle} functionality in Digital Twin system`,
+        ["digital-twin", "phase-23"]
+      );
+      epicsCreated++;
+    }
 
     for (const story of stories) {
+      // Check if story already exists
+      if (existingStoryTitles.has(story.title)) {
+        duplicatesSkipped++;
+        continue;
+      }
+
       await createUserStory(userId, story, epicId);
       storiesCreated++;
     }
   }
 
-  return { epicsCreated, storiesCreated };
+  return { epicsCreated, storiesCreated, duplicatesSkipped };
 }
