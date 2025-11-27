@@ -1,6 +1,4 @@
 import Stripe from 'stripe';
-import { ENV } from '../_core/env';
-
 /**
  * Stripe Payment Service
  * 
@@ -11,8 +9,8 @@ import { ENV } from '../_core/env';
  */
 
 // Initialize Stripe
-const stripe = new Stripe(ENV.stripeSecretKey, {
-  apiVersion: '2024-12-18.acacia',
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
+  apiVersion: '2025-11-17.clover',
 });
 
 export interface CreateCheckoutSessionParams {
