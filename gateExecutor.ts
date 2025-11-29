@@ -5,6 +5,7 @@ import { invokeLLM } from "../_core/llm";
 import { storagePut } from "../storage";
 import { messageBus, broadcastNotification, sendResult } from "./messageBus";
 import { GuardianAgent } from "./guardianAgent";
+import { emitGateExecution, emitPipelineUpdate } from "../_core/websocket";
 
 export class GateExecutor {
   /**
@@ -45,6 +46,15 @@ export class GateExecutor {
       gateNumber,
       projectId,
       projectTitle: project.title,
+    });
+
+    // Emit WebSocket event
+    emitGateExecution(projectId, {
+      type: "started",
+      executionId: execution.id,
+      gateNumber,
+      projectId,
+      status: "in_progress",
     });
 
     try {
@@ -112,6 +122,15 @@ export class GateExecutor {
         }
       }
 
+      // Emit WebSocket success event
+      emitGateExecution(projectId, {
+        type: "completed",
+        executionId: execution.id,
+        gateNumber,
+        projectId,
+        status: "passed",
+      });
+
       return { success: true, output: result.output };
     } catch (error: any) {
       // Mark as failed
@@ -122,6 +141,16 @@ export class GateExecutor {
           errorMessage: error.message,
         })
         .where(eq(gateExecutions.id, execution.id));
+
+      // Emit WebSocket failure event
+      emitGateExecution(projectId, {
+        type: "failed",
+        executionId: execution.id,
+        gateNumber,
+        projectId,
+        status: "failed",
+        error: error.message,
+      });
 
       return { success: false, error: error.message };
     }
