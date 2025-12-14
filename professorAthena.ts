@@ -162,7 +162,8 @@ ${tutorial.expectedOutput ? `Expected Output: ${tutorial.expectedOutput}` : ''}`
   }
   
   const response = await invokeLLM({ messages });
-  return response.choices[0].message.content;
+  const content = response.choices[0].message.content;
+  return typeof content === 'string' ? content : JSON.stringify(content);
 }
 
 /**
@@ -477,7 +478,8 @@ Always be supportive and make learning enjoyable!`,
   ];
   
   const response = await invokeLLM({ messages });
-  return response.choices[0].message.content;
+  const content = response.choices[0].message.content;
+  return typeof content === 'string' ? content : JSON.stringify(content);
 }
 
 /**

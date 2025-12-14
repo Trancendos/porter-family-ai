@@ -174,7 +174,8 @@ Provide insights in JSON format:
     const content = response.choices[0]?.message?.content;
     if (!content) return [];
 
-    const result = JSON.parse(content);
+    const contentStr = typeof content === 'string' ? content : JSON.stringify(content);
+    const result = JSON.parse(contentStr);
     
     return result.insights.map((insight: any) => ({
       id: `ai-insight-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,

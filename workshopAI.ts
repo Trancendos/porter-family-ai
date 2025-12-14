@@ -123,7 +123,8 @@ Provide a comprehensive analysis with specific recommendations.`,
   });
 
   const content = response.choices[0].message.content;
-  return JSON.parse(content || "{}");
+  const contentStr = typeof content === 'string' ? content : JSON.stringify(content);
+  return JSON.parse(contentStr || "{}");
 }
 
 /**
@@ -180,7 +181,8 @@ Provide a thorough code review with focus on:
   });
 
   const content = response.choices[0].message.content;
-  return JSON.parse(content || "{}");
+  const contentStr = typeof content === 'string' ? content : JSON.stringify(content);
+  return JSON.parse(contentStr || "{}");
 }
 
 /**
@@ -236,7 +238,8 @@ Provide specific, actionable recommendations.`,
   });
 
   const content = response.choices[0].message.content;
-  return JSON.parse(content || "{}");
+  const contentStr = typeof content === 'string' ? content : JSON.stringify(content);
+  return JSON.parse(contentStr || "{}");
 }
 
 /**
@@ -289,7 +292,8 @@ If possible, provide the resolved code.`,
   });
 
   const content = response.choices[0].message.content;
-  return JSON.parse(content || "{}");
+  const contentStr = typeof content === 'string' ? content : JSON.stringify(content);
+  return JSON.parse(contentStr || "{}");
 }
 
 /**
@@ -345,7 +349,8 @@ Analyze the error and provide:
   });
 
   const content = response.choices[0].message.content;
-  return JSON.parse(content || "{}");
+  const contentStr = typeof content === 'string' ? content : JSON.stringify(content);
+  return JSON.parse(contentStr || "{}");
 }
 
 /**
@@ -404,7 +409,8 @@ Format in markdown.`,
   });
 
   const content = response.choices[0].message.content;
-  return JSON.parse(content || "{}");
+  const contentStr = typeof content === 'string' ? content : JSON.stringify(content);
+  return JSON.parse(contentStr || "{}");
 }
 
 /**
@@ -460,7 +466,8 @@ Provide:
   });
 
   const content = response.choices[0].message.content;
-  return JSON.parse(content || "{}");
+  const contentStr = typeof content === 'string' ? content : JSON.stringify(content);
+  return JSON.parse(contentStr || "{}");
 }
 
 /**
@@ -509,5 +516,6 @@ Provide expert guidance and recommendations.`,
   });
 
   const content = response.choices[0].message.content;
-  return JSON.parse(content || "{}");
+  const contentStr = typeof content === 'string' ? content : JSON.stringify(content);
+  return JSON.parse(contentStr || "{}");
 }

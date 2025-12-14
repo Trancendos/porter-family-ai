@@ -102,7 +102,8 @@ Color guidelines:
       return [];
     }
 
-    const parsed = JSON.parse(content);
+    const contentStr = typeof content === 'string' ? content : JSON.stringify(content);
+    const parsed = JSON.parse(contentStr);
     const suggestions: TagSuggestion[] = parsed.suggestions || [];
 
     // Store suggestions in database for future reference
@@ -193,7 +194,8 @@ Return JSON array of relevant tag names (maximum 5):
       return [];
     }
 
-    const parsed = JSON.parse(content);
+    const contentStr = typeof content === 'string' ? content : JSON.stringify(content);
+    const parsed = JSON.parse(contentStr);
     return parsed.tags || [];
   } catch (error) {
     console.error("Failed to suggest existing tags:", error);

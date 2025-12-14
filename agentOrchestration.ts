@@ -128,7 +128,8 @@ Return JSON with this structure:
       throw new Error("Invalid response from LLM");
     }
 
-    const result = JSON.parse(content);
+    const contentStr = typeof content === 'string' ? content : JSON.stringify(content);
+    const result = JSON.parse(contentStr);
     return result;
   } catch (error) {
     console.error("[Agent Orchestration] Failed to analyze intent:", error);

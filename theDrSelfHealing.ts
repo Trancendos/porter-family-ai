@@ -205,8 +205,9 @@ Provide a JSON response with:
 
     const content = response.choices[0]?.message?.content;
     if (!content) return null;
-
-    return JSON.parse(content);
+    
+    const contentStr = typeof content === 'string' ? content : JSON.stringify(content);
+    return JSON.parse(contentStr);
   } catch (error) {
     logger.error('[The Dr] AI analysis failed', error as Error);
     return null;
@@ -464,8 +465,9 @@ Provide 3 resolution options in JSON format:
 
     const content = response.choices[0]?.message?.content;
     if (!content) return null;
-
-    const options = JSON.parse(content);
+    
+    const contentStr = typeof content === 'string' ? content : JSON.stringify(content);
+    const options = JSON.parse(contentStr);
     
     return {
       errorCode,

@@ -70,7 +70,8 @@ Provide a JSON response with:
       throw new Error("No response from Cornelius");
     }
 
-    return JSON.parse(content);
+    const contentStr = typeof content === 'string' ? content : JSON.stringify(content);
+    return JSON.parse(contentStr);
   } catch (error) {
     console.error("[Cornelius] Phase prediction error:", error);
     return {
@@ -166,7 +167,8 @@ Provide a JSON response with:
       throw new Error("No response from The Dr");
     }
 
-    return JSON.parse(content);
+    const contentStr = typeof content === 'string' ? content : JSON.stringify(content);
+    return JSON.parse(contentStr);
   } catch (error) {
     console.error("[The Dr] Criteria validation error:", error);
     return {
@@ -262,7 +264,8 @@ Provide a JSON response with:
       throw new Error("No response from Norman");
     }
 
-    const result = JSON.parse(content);
+    const contentStr = typeof content === 'string' ? content : JSON.stringify(content);
+    const result = JSON.parse(contentStr);
     // Sort by relevance score
     result.suggestions.sort((a: any, b: any) => b.relevanceScore - a.relevanceScore);
     return result;
@@ -350,7 +353,8 @@ Provide a JSON response with:
       throw new Error("No response from Cornelius");
     }
 
-    return JSON.parse(content);
+    const contentStr = typeof content === 'string' ? content : JSON.stringify(content);
+    return JSON.parse(contentStr);
   } catch (error) {
     console.error("[Cornelius] Project health analysis error:", error);
     return {

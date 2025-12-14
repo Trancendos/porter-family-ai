@@ -171,7 +171,8 @@ Generate a detailed KB article in JSON format:
     const content = response.choices[0]?.message?.content;
     if (!content) return null;
 
-    return JSON.parse(content);
+    const contentStr = typeof content === 'string' ? content : JSON.stringify(content);
+    return JSON.parse(contentStr);
   } catch (error) {
     logger.error('[KB] Failed to generate article content', error as Error);
     return null;
@@ -391,7 +392,8 @@ Provide updated content in JSON format:
     const content = response.choices[0]?.message?.content;
     if (!content) return;
 
-    const updates = JSON.parse(content);
+    const contentStr = typeof content === 'string' ? content : JSON.stringify(content);
+    const updates = JSON.parse(contentStr);
     
     const { knowledgeBaseArticles } = await import("../../drizzle/platform-schema");
     const { eq, sql } = await import("drizzle-orm");

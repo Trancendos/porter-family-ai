@@ -202,7 +202,8 @@ Be specific and actionable in your recommendations.`;
     const content = response.choices[0].message.content;
     if (!content || typeof content !== 'string') throw new Error("No analysis generated");
 
-    const analysis = JSON.parse(content) as Omit<CardAnalysis, "tags">;
+    const contentStr = typeof content === 'string' ? content : JSON.stringify(content);
+    const analysis = JSON.parse(contentStr) as Omit<CardAnalysis, "tags">;
 
     // Generate smart tags
     const tagSuggestions = await generateSmartTags(
