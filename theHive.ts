@@ -291,7 +291,10 @@ Return a JSON array of knowledge items with: category, title, description, confi
       },
     });
 
-    const parsed = JSON.parse(response.choices[0].message.content || '{"knowledge":[]}');
+    const content = typeof response.choices[0].message.content === 'string' 
+      ? response.choices[0].message.content 
+      : '{"knowledge":[]}';
+    const parsed = JSON.parse(content || '{"knowledge":[]}');
 
     for (const item of parsed.knowledge) {
       newKnowledge.push({
@@ -568,7 +571,10 @@ Return JSON array of injection points.`,
       },
     });
 
-    const parsed = JSON.parse(response.choices[0].message.content || '{"points":[]}');
+    const content2 = typeof response.choices[0].message.content === 'string' 
+      ? response.choices[0].message.content 
+      : '{"points":[]}';
+    const parsed = JSON.parse(content2 || '{"points":[]}');
 
     for (const point of parsed.points) {
       injectionPoints.push({
