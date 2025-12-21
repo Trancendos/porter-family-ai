@@ -368,7 +368,9 @@ Respond with JSON:
       },
     });
     
-    const fix = JSON.parse(response.choices[0].message.content || '{}');
+    const messageContent = response.choices[0].message.content;
+    const contentStr = typeof messageContent === 'string' ? messageContent : JSON.stringify(messageContent || '{}');
+    const fix = JSON.parse(contentStr || '{}');
     return { issueId: issue.id, ...fix };
   }
   
@@ -557,7 +559,9 @@ Generate 5-10 high-value recommendations.`,
     });
     
     // Parse recommendations (simplified - would need proper JSON parsing)
-    const content = response.choices[0].message.content || '';
+    const content = typeof response.choices[0].message.content === 'string' 
+      ? response.choices[0].message.content 
+      : JSON.stringify(response.choices[0].message.content || '');
     
     // For now, return empty array - would implement proper parsing
     return recommendations;
@@ -681,7 +685,9 @@ Include:
       ],
     });
     
-    const content = response.choices[0].message.content || '';
+    const content = typeof response.choices[0].message.content === 'string' 
+      ? response.choices[0].message.content 
+      : JSON.stringify(response.choices[0].message.content || '');
     
     // Parse sections (simplified - would need proper parsing)
     return {

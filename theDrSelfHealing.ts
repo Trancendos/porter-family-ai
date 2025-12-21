@@ -281,7 +281,7 @@ async function attemptAutomatedFix(
     const duration = Date.now() - startTime;
     
     // Log to audit trail
-    logger.info(`[The Dr] Automated fix completed for ${errorCode}`, undefined, {
+    logger.info(`[The Dr] Automated fix completed for ${errorCode}`, {
       errorCode,
       fixApplied,
       validated,
