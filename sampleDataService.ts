@@ -11,6 +11,7 @@
  */
 
 import { getDb } from "../db";
+import { sql } from "drizzle-orm";
 import { generatePID, generateDPID } from "./productIdService";
 
 /**
@@ -332,5 +333,5 @@ export async function clearAllSampleData() {
   console.log("✅ All sample data cleared!");
 }
 
-// Helper for SQL import
-const { sql } = await import("drizzle-orm");
+// Helper for SQL import - removed top-level await
+// Use dynamic import inside functions if needed

@@ -31,7 +31,7 @@ import { invokeLLM } from '../_core/llm';
  */
 export class Atlas {
   static readonly DPID = 'DPID-ADM-AI-011';
-  static readonly name = 'Atlas';
+  static readonly agentName = 'Atlas';
   static readonly role = 'The Navigator';
   
   /**
@@ -83,7 +83,9 @@ Format as JSON:
       ]
     });
     
-    const result = JSON.parse(response.choices[0].message.content);
+    const content = response.choices[0].message.content;
+    const contentStr = typeof content === 'string' ? content : JSON.stringify(content);
+    const result = JSON.parse(contentStr);
     const totalDuration = result.steps.reduce((sum: number, step: any) => sum + step.estimatedTime, 0);
     
     return {
@@ -117,7 +119,8 @@ Provide clear, concise guidance (2-3 sentences) on what to do next.`;
       ]
     });
     
-    return response.choices[0].message.content;
+    const content = response.choices[0].message.content;
+    return typeof content === 'string' ? content : JSON.stringify(content);
   }
 }
 
@@ -127,7 +130,7 @@ Provide clear, concise guidance (2-3 sentences) on what to do next.`;
  */
 export class Cassandra {
   static readonly DPID = 'DPID-ADM-AI-012';
-  static readonly name = 'Cassandra';
+  static readonly agentName = 'Cassandra';
   static readonly role = 'The Prophet';
   
   /**
@@ -204,7 +207,7 @@ export class Cassandra {
  */
 export class Hermes {
   static readonly DPID = 'DPID-ADM-AI-013';
-  static readonly name = 'Hermes';
+  static readonly agentName = 'Hermes';
   static readonly role = 'The Messenger';
   
   /**
@@ -248,7 +251,7 @@ export class Hermes {
  */
 export class Minerva {
   static readonly DPID = 'DPID-ADM-AI-014';
-  static readonly name = 'Minerva';
+  static readonly agentName = 'Minerva';
   static readonly role = 'The Strategist';
   
   /**
@@ -297,7 +300,9 @@ Format as JSON.`;
       ]
     });
     
-    return JSON.parse(response.choices[0].message.content);
+    const content = response.choices[0].message.content;
+    const contentStr = typeof content === 'string' ? content : JSON.stringify(content);
+    return JSON.parse(contentStr);
   }
   
   /**
@@ -330,7 +335,7 @@ Format as JSON.`;
  */
 export class Apollo {
   static readonly DPID = 'DPID-ADM-AI-015';
-  static readonly name = 'Apollo';
+  static readonly agentName = 'Apollo';
   static readonly role = 'The Healer';
   
   /**
@@ -396,7 +401,7 @@ export class Apollo {
  */
 export class Janus {
   static readonly DPID = 'DPID-ADM-AI-016';
-  static readonly name = 'Janus';
+  static readonly agentName = 'Janus';
   static readonly role = 'The Gatekeeper';
   
   /**
@@ -441,7 +446,7 @@ export class Janus {
  */
 export class Thoth {
   static readonly DPID = 'DPID-ADM-AI-017';
-  static readonly name = 'Thoth';
+  static readonly agentName = 'Thoth';
   static readonly role = 'The Archivist';
   
   /**
@@ -486,7 +491,7 @@ export class Thoth {
  */
 export class TheAuditor {
   static readonly DPID = 'DPID-ADM-AI-018';
-  static readonly name = 'The Auditor';
+  static readonly agentName = 'The Auditor';
   static readonly role = 'Compliance Validator';
   
   /**
@@ -527,7 +532,9 @@ Format as JSON.`;
       ]
     });
     
-    const result = JSON.parse(response.choices[0].message.content);
+    const content = response.choices[0].message.content;
+    const contentStr = typeof content === 'string' ? content : JSON.stringify(content);
+    const result = JSON.parse(contentStr);
     
     return {
       compliant: result.score >= 80,

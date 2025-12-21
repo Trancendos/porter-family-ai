@@ -92,7 +92,7 @@ export async function ensureErrorDocumentation(errorCode: string): Promise<void>
   
   // If error is app-specific, ensure per-app KB entry
   if (errorDetails.context) {
-    const context = JSON.parse(errorDetails.context as string);
+    const context = JSON.parse(errorDetails.context as unknown as string);
     if (context.appId) {
       await ensurePerAppKBEntry(errorCode, context.appId);
     }

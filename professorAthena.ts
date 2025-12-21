@@ -8,7 +8,7 @@
  * Personality: Patient, encouraging, knowledgeable educator
  */
 
-import { invokeLLM } from "../_core/llm";
+import { invokeLLM, type Message } from '../_core/llm';
 import { logger } from "./errorLoggingService";
 
 export interface LearningProfile {
@@ -117,7 +117,8 @@ What should they focus on next? Provide specific course recommendations and lear
     ],
   });
   
-  return response.choices[0].message.content;
+  const content = response.choices[0].message.content;
+  return typeof content === 'string' ? content : JSON.stringify(content);
 }
 
 /**
@@ -130,15 +131,15 @@ export async function provideInteractiveTutorialGuidance(
 ): Promise<string> {
   logger.info(`[Athena] Providing tutorial guidance for step ${tutorial.step}/${tutorial.totalSteps}`);
   
-  const messages = [
+  const messages: Message[] = [
     {
-      role: 'system',
+      role: 'system' as const,
       content: `You are Professor Athena, guiding a student through an interactive tutorial.
 Be patient, encouraging, and provide clear explanations. If they're stuck, offer hints
 without giving away the answer immediately.`,
     },
     {
-      role: 'user',
+      role: 'user' as const,
       content: `Tutorial Step ${tutorial.step}/${tutorial.totalSteps}:
 ${tutorial.instruction}
 
@@ -149,14 +150,14 @@ ${tutorial.expectedOutput ? `Expected Output: ${tutorial.expectedOutput}` : ''}`
   
   if (userCode) {
     messages.push({
-      role: 'user',
+      role: 'user' as const,
       content: `The student submitted this code:\n\`\`\`\n${userCode}\n\`\`\`\n\nProvide feedback.`,
     });
   }
   
   if (userQuestion) {
     messages.push({
-      role: 'user',
+      role: 'user' as const,
       content: `The student asked: "${userQuestion}"\n\nProvide guidance.`,
     });
   }
@@ -245,7 +246,9 @@ ${code}
     },
   });
   
-  const review = JSON.parse(response.choices[0].message.content);
+  const content = response.choices[0].message.content;
+  const contentStr = typeof content === 'string' ? content : JSON.stringify(content);
+  const review = JSON.parse(contentStr);
   return {
     code,
     language,
@@ -323,7 +326,9 @@ Respond in JSON format.`,
     },
   });
   
-  const quizData = JSON.parse(response.choices[0].message.content);
+  const content = response.choices[0].message.content;
+  const contentStr = typeof content === 'string' ? content : JSON.stringify(content);
+  const quizData = JSON.parse(contentStr);
   
   return {
     id: `quiz-${courseId}-${moduleId}-${Date.now()}`,
@@ -395,10 +400,13 @@ Provide encouraging feedback and study recommendations.`,
     ],
   });
   
+  const feedbackContent = feedbackResponse.choices[0].message.content;
+  const feedbackStr = typeof feedbackContent === 'string' ? feedbackContent : JSON.stringify(feedbackContent);
+  
   return {
     score,
     passed,
-    feedback: feedbackResponse.choices[0].message.content,
+    feedback: feedbackStr,
     questionResults,
   };
 }
@@ -451,13 +459,13 @@ Topics: ${topics.join(', ')}`,
  */
 export async function provideLearningAssistance(
   userMessage: string,
-  conversationHistory: Array<{ role: string; content: string }> = []
+  conversationHistory: Message[] = []
 ): Promise<string> {
   logger.info(`[Athena] Providing learning assistance`);
   
-  const messages = [
+  const messages: Message[] = [
     {
-      role: 'system',
+      role: 'system' as const,
       content: `You are Professor Athena, an AI educator helping students learn the Trancendos platform.
 
 Your teaching style:
@@ -472,7 +480,7 @@ Always be supportive and make learning enjoyable!`,
     },
     ...conversationHistory,
     {
-      role: 'user',
+      role: 'user' as const,
       content: userMessage,
     },
   ];
