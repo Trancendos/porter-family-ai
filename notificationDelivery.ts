@@ -8,7 +8,7 @@
  */
 
 import { getDb } from "../db";
-import { notificationDeliveryLogs, userNotificationPreferences } from "../../drizzle/schema";
+import { notificationDeliveryLogs, userNotificationPreferences, users } from "../../drizzle/schema";
 import { eq } from "drizzle-orm";
 
 export type NotificationPriority = "critical" | "high" | "medium" | "low";
@@ -175,6 +175,14 @@ export async function deliverNotification(payload: NotificationPayload): Promise
   // Get user preferences
   const prefs = await getUserPreferences(payload.userId);
 
+  // Get user contact info from users table
+  const db = await getDb();
+  let userEmail: string | null = null;
+  if (db) {
+    const userResult = await db.select({ email: users.email }).from(users).where(eq(users.id, payload.userId)).limit(1);
+    userEmail = userResult[0]?.email || null;
+  }
+
   const result: DeliveryResult = {
     success: false,
     channels: {},
@@ -183,28 +191,19 @@ export async function deliverNotification(payload: NotificationPayload): Promise
   // Determine channels based on priority and user preferences
   const shouldSendEmail =
     (payload.priority === "critical" || payload.priority === "high") &&
-    prefs?.emailEnabled !== false;
+    prefs?.enableEmail !== false &&
+    userEmail;
 
-  const shouldSendSMS =
-    payload.priority === "critical" &&
-    prefs?.smsEnabled !== false &&
-    prefs?.phoneNumber;
+  const shouldSendSMS = false; // SMS not implemented yet
 
   const shouldSendInApp = true; // Always create in-app notification
 
   // Send through appropriate channels
-  if (shouldSendEmail && prefs?.email) {
+  if (shouldSendEmail && userEmail) {
     result.channels.email = await sendEmailNotification(
-      prefs.email,
+      userEmail,
       payload.title,
       payload.message
-    );
-  }
-
-  if (shouldSendSMS && prefs?.phoneNumber) {
-    result.channels.sms = await sendSMSNotification(
-      prefs.phoneNumber,
-      `${payload.title}: ${payload.message}`
     );
   }
 

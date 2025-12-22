@@ -246,7 +246,9 @@ Provide a comprehensive compatibility analysis including:
       throw new Error("No response from LLM");
     }
 
-    return JSON.parse(content) as MergeCompatibility;
+    // Handle both string and array content types
+    const contentText = typeof content === 'string' ? content : JSON.stringify(content);
+    return JSON.parse(contentText) as MergeCompatibility;
   } catch (error) {
     console.error("Error calculating merge probability:", error);
     // Fallback to rule-based analysis
@@ -435,7 +437,8 @@ Provide:
       ],
     });
 
-    const result = response.choices[0].message.content || "Healing strategy applied successfully";
+    const content = response.choices[0].message.content;
+    const result = typeof content === 'string' ? content : (content ? JSON.stringify(content) : "Healing strategy applied successfully");
 
     return {
       success: true,
