@@ -3,6 +3,7 @@
  * 
  * Export financial reports to PDF and Excel formats
  */
+import PDFDocument from 'pdfkit';
 
 interface ReportData {
   title: string;
@@ -248,21 +249,134 @@ export async function generatePortfolioReport(): Promise<ReportData> {
  * Export report to PDF
  */
 export async function exportToPDF(report: ReportData): Promise<Buffer> {
-  // TODO: Implement PDF generation using a library like pdfkit or puppeteer
-  // For now, return a placeholder
-  
-  const pdfContent = `
-${report.title}
-Generated: ${report.generatedAt.toISOString()}
-Period: ${report.period.start.toISOString()} to ${report.period.end.toISOString()}
+  return new Promise((resolve, reject) => {
+    // Create a new PDF document
+    const doc = new PDFDocument({ margin: 50 });
+    const buffers: Buffer[] = [];
 
-${report.sections.map(section => `
-${section.title}
-${JSON.stringify(section.data, null, 2)}
-`).join('\n')}
-  `;
-  
-  return Buffer.from(pdfContent, 'utf-8');
+    // Collect data chunks
+    doc.on('data', (chunk) => buffers.push(chunk));
+
+    // When done, concatenate chunks and resolve
+    doc.on('end', () => resolve(Buffer.concat(buffers)));
+
+    // Handle errors
+    doc.on('error', (err) => reject(err));
+
+    // Header
+    doc.fontSize(20).text(report.title, { align: 'center' });
+    doc.moveDown();
+
+    doc.fontSize(12).text(`Generated: ${report.generatedAt.toISOString()}`);
+    doc.text(`Period: ${report.period.start.toISOString()} to ${report.period.end.toISOString()}`);
+    doc.moveDown();
+    doc.moveDown();
+
+    // Sections
+    for (const section of report.sections) {
+      doc.fontSize(16).text(section.title, { underline: true });
+      doc.moveDown(0.5);
+
+      if (section.type === 'text') {
+        doc.fontSize(12).text(String(section.data));
+      } else if (section.type === 'summary') {
+        doc.fontSize(12);
+        const data = section.data as Record<string, any>;
+        for (const [key, value] of Object.entries(data)) {
+          // Format key: camelCase to Title Case
+          const formattedKey = key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+          doc.text(`${formattedKey}: ${value}`);
+        }
+      } else if (section.type === 'table') {
+        const data = section.data as any[];
+        if (Array.isArray(data) && data.length > 0) {
+            const headers = Object.keys(data[0]);
+
+            // Simple table layout
+            const tableWidth = doc.page.width - 100; // 50 margin each side
+            const columnWidth = tableWidth / headers.length;
+            const startX = 50;
+            let currentY = doc.y;
+
+            // Draw Header
+            doc.fontSize(10).font('Helvetica-Bold');
+
+            // Background for header
+            doc.save();
+            doc.rect(startX, currentY, tableWidth, 20).fill('#e0e0e0');
+            doc.restore();
+            doc.fillColor('black');
+
+            headers.forEach((header, i) => {
+                doc.text(header.toUpperCase(), startX + (i * columnWidth) + 2, currentY + 5, {
+                    width: columnWidth - 4,
+                    align: 'left',
+                    ellipsis: true
+                });
+            });
+
+            currentY += 25;
+            doc.font('Helvetica');
+            doc.y = currentY;
+
+            // Draw Rows
+            data.forEach((row, rowIndex) => {
+                let maxRowHeight = 0;
+
+                // Calculate max height for this row first
+                headers.forEach((header) => {
+                    const text = row[header] !== undefined && row[header] !== null ? String(row[header]) : '';
+                    const height = doc.heightOfString(text, { width: columnWidth - 4 });
+                    if (height > maxRowHeight) maxRowHeight = height;
+                });
+
+                // Minimum row height
+                maxRowHeight = Math.max(maxRowHeight, 15);
+
+                // Check for page break
+                if (doc.y + maxRowHeight > doc.page.height - 50) {
+                    doc.addPage();
+                    currentY = 50;
+                    doc.y = currentY;
+                }
+
+                const rowY = doc.y;
+
+                // Alternating row background
+                if (rowIndex % 2 === 0) {
+                    doc.save();
+                    doc.rect(startX, rowY - 2, tableWidth, maxRowHeight + 4).fill('#f9f9f9');
+                    doc.restore();
+                }
+
+                // Render cell text
+                headers.forEach((header, i) => {
+                    const text = row[header] !== undefined && row[header] !== null ? String(row[header]) : '';
+                    doc.text(text, startX + (i * columnWidth) + 2, rowY, {
+                        width: columnWidth - 4,
+                        align: 'left'
+                    });
+                });
+
+                doc.y = rowY + maxRowHeight + 5;
+            });
+        } else {
+            doc.fontSize(12).font('Helvetica-Oblique').text('No data available');
+            doc.font('Helvetica');
+        }
+      } else if (section.type === 'chart') {
+         // Placeholder for charts
+         doc.fontSize(10).font('Helvetica-Oblique').text('[Chart Visualization Not Available in PDF]');
+         doc.font('Helvetica');
+         doc.moveDown(0.5);
+      }
+
+      doc.moveDown(2);
+    }
+
+    // Finalize PDF file
+    doc.end();
+  });
 }
 
 /**
