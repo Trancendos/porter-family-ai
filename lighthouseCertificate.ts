@@ -12,7 +12,14 @@ import { infinityOneAccounts, lighthouseCertificates, certificateRevocationList 
 import { eq } from "drizzle-orm";
 
 const CERTIFICATE_VALIDITY_DAYS = 90;
-const MASTER_ENCRYPTION_KEY = process.env.LIGHTHOUSE_MASTER_KEY || "default-master-key-change-in-production";
+
+export function getMasterEncryptionKey(): string {
+  const key = process.env.LIGHTHOUSE_MASTER_KEY;
+  if (!key) {
+    throw new Error("CRITICAL SECURITY ERROR: LIGHTHOUSE_MASTER_KEY environment variable is not set. You must set this variable in your .env file.");
+  }
+  return key;
+}
 
 export interface CertificateSubject {
   commonName: string;
@@ -443,7 +450,7 @@ function deriveLegacyKeyAndIv(password: string): { key: Buffer; iv: Buffer } {
  * Encrypt private key with master key using AES-256-GCM
  */
 export function encryptPrivateKey(privateKey: string): string {
-  const { key, iv } = deriveKeyAndIv(MASTER_ENCRYPTION_KEY);
+  const { key, iv } = deriveKeyAndIv(getMasterEncryptionKey());
   const cipher = crypto.createCipheriv("aes-256-gcm", key, iv);
 
   let encrypted = cipher.update(privateKey, "utf8", "hex");
@@ -469,7 +476,7 @@ export function decryptPrivateKey(encryptedPrivateKey: string): string {
         const iv = Buffer.from(ivHex, 'hex');
         const authTag = Buffer.from(authTagHex, 'hex');
 
-        const key = crypto.createHash('sha256').update(MASTER_ENCRYPTION_KEY).digest();
+        const key = crypto.createHash('sha256').update(getMasterEncryptionKey()).digest();
         const decipher = crypto.createDecipheriv("aes-256-gcm", key, iv);
         decipher.setAuthTag(authTag);
 
@@ -484,7 +491,7 @@ export function decryptPrivateKey(encryptedPrivateKey: string): string {
 
   // Fallback to legacy decryption (AES-256-CBC with MD5 derived key)
   try {
-    const { key, iv } = deriveLegacyKeyAndIv(MASTER_ENCRYPTION_KEY);
+    const { key, iv } = deriveLegacyKeyAndIv(getMasterEncryptionKey());
     const decipher = crypto.createDecipheriv("aes-256-cbc", key, iv);
     let decrypted = decipher.update(encryptedPrivateKey, "hex", "utf8");
     decrypted += decipher.final("utf8");

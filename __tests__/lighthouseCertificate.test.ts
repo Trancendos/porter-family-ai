@@ -1,13 +1,14 @@
 import { describe, it, expect } from "vitest";
 import * as crypto from "crypto";
+
+// Set required environment variable before importing the module
+process.env.LIGHTHOUSE_MASTER_KEY = "test-master-key-for-unit-tests-only";
+
 import { encryptPrivateKey, decryptPrivateKey } from "../lighthouseCertificate";
 
 describe("Lighthouse Certificate Encryption", () => {
   const TEST_KEY = "test-private-key-content-12345";
-  // Use the same fallback key as in the source file
-  const MASTER_ENCRYPTION_KEY =
-    process.env.LIGHTHOUSE_MASTER_KEY ||
-    "default-master-key-change-in-production";
+  const MASTER_ENCRYPTION_KEY = process.env.LIGHTHOUSE_MASTER_KEY;
 
   it("should encrypt and decrypt correctly", () => {
     const encrypted = encryptPrivateKey(TEST_KEY);
@@ -39,7 +40,7 @@ describe("Lighthouse Certificate Encryption", () => {
       return { key: d.subarray(0, 32), iv: d.subarray(32, 48) };
     }
 
-    const { key, iv } = deriveLegacyKeyAndIv(MASTER_ENCRYPTION_KEY);
+    const { key, iv } = deriveLegacyKeyAndIv(MASTER_ENCRYPTION_KEY as string);
     const cipher = crypto.createCipheriv("aes-256-cbc", key, iv);
     let legacyEncrypted = cipher.update(TEST_KEY, "utf8", "hex");
     legacyEncrypted += cipher.final("hex");
