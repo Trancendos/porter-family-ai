@@ -33,14 +33,14 @@ export interface NotionDatabase {
 }
 
 /**
- * Execute MCP tool via manus-mcp-cli
+ * Execute MCP tool via trancendos-mcp-cli
  */
 async function executeMCPTool(
   toolName: string,
   input: Record<string, any>
 ): Promise<any> {
   const inputJson = JSON.stringify(input);
-  const command = `manus-mcp-cli tool call ${toolName} --server notion --input '${inputJson}'`;
+  const command = `trancendos-mcp-cli tool call ${toolName} --server notion --input '${inputJson}'`;
   
   try {
     const { stdout, stderr } = await execAsync(command);

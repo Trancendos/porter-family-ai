@@ -282,9 +282,9 @@ async function scanNotion(estate: any, result: ScanResult, db: any) {
   const { execSync } = await import('child_process');
   
   try {
-    // Use manus-mcp-cli to access Notion MCP server
+    // Use trancendos-mcp-cli to access Notion MCP server
     const notionData = execSync(
-      `manus-mcp-cli call notion search_objects --args '${JSON.stringify({ query: "" })}'`,
+      `trancendos-mcp-cli call notion search_objects --args '${JSON.stringify({ query: "" })}'`,
       { encoding: 'utf-8', timeout: 30000 }
     );
     
@@ -371,9 +371,9 @@ async function scanLinear(estate: any, result: ScanResult, db: any) {
   const { execSync } = await import('child_process');
   
   try {
-    // Use manus-mcp-cli to access Linear MCP server
+    // Use trancendos-mcp-cli to access Linear MCP server
     const issuesData = execSync(
-      `manus-mcp-cli call linear list_issues --args '${JSON.stringify({ limit: 20 })}'`,
+      `trancendos-mcp-cli call linear list_issues --args '${JSON.stringify({ limit: 20 })}'`,
       { encoding: 'utf-8', timeout: 30000 }
     );
     

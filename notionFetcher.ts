@@ -45,7 +45,7 @@ export async function fetchAllNotionPages(): Promise<NotionFetchResult> {
     for (const term of searchTerms) {
       try {
         const { stdout } = await execAsync(
-          `manus-mcp-cli tool call notion-search --server notion --input '{"query": "${term}", "limit": 50}'`
+          `trancendos-mcp-cli tool call notion-search --server notion --input '{"query": "${term}", "limit": 50}'`
         );
 
         const searchResult = JSON.parse(stdout);
@@ -58,7 +58,7 @@ export async function fetchAllNotionPages(): Promise<NotionFetchResult> {
               // Fetch full page content
               try {
                 const { stdout: contentStdout } = await execAsync(
-                  `manus-mcp-cli tool call notion-fetch --server notion --input '{"url": "${page.url}"}'`
+                  `trancendos-mcp-cli tool call notion-fetch --server notion --input '{"url": "${page.url}"}'`
                 );
                 
                 const pageContent = JSON.parse(contentStdout);
@@ -108,7 +108,7 @@ export async function fetchAllNotionPages(): Promise<NotionFetchResult> {
 export async function fetchNotionPage(urlOrId: string): Promise<NotionPage | null> {
   try {
     const { stdout } = await execAsync(
-      `manus-mcp-cli tool call notion-fetch --server notion --input '{"url": "${urlOrId}"}'`
+      `trancendos-mcp-cli tool call notion-fetch --server notion --input '{"url": "${urlOrId}"}'`
     );
     
     const pageData = JSON.parse(stdout);

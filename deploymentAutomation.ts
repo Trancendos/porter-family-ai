@@ -13,7 +13,7 @@ const execAsync = promisify(exec);
 
 export interface DeploymentConfig {
   deploymentType: "cloud" | "self-hosted" | "hybrid";
-  platform: "manus" | "github" | "vercel" | "netlify" | "aws" | "gcp" | "azure" | "docker" | "kubernetes";
+  platform: "trancendos" | "github" | "vercel" | "netlify" | "aws" | "gcp" | "azure" | "docker" | "kubernetes";
   database: {
     provider: string;
     connectionString: string;
@@ -441,8 +441,8 @@ ${this.config.domain ? `DOMAIN="${this.config.domain}"` : ""}
       let url: string;
 
       switch (this.config.platform) {
-        case "manus":
-          url = await this.deployToManus();
+        case "trancendos":
+          url = await this.deployTotrancendos();
           break;
         case "github":
           url = await this.deployToGitHub();
@@ -472,8 +472,8 @@ ${this.config.domain ? `DOMAIN="${this.config.domain}"` : ""}
     }
   }
 
-  private async deployToManus(): Promise<string> {
-    // Manus deployment is already handled by the platform
+  private async deployTotrancendos(): Promise<string> {
+    // trancendos deployment is already handled by the platform
     return process.env.VITE_FRONTEND_FORGE_API_URL || "http://localhost:3000";
   }
 

@@ -342,7 +342,7 @@ export function templateToDeploymentConfig(
 ) {
   return {
     deploymentType: template.config.deploymentType,
-    platform: "manus" as const, // Default to Manus, can be changed
+    platform: "trancendos" as const, // Default to trancendos, can be changed
     database: {
       provider: template.config.database.provider,
       connectionString: customization.databaseConnectionString || "",

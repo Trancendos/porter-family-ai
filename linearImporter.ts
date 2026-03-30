@@ -39,7 +39,7 @@ export async function importLinearIssues(limit: number = 100): Promise<LinearImp
 
   try {
     const { stdout } = await execAsync(
-      `manus-mcp-cli tool call list_issues --server linear --input '{"limit": ${limit}}'`
+      `trancendos-mcp-cli tool call list_issues --server linear --input '{"limit": ${limit}}'`
     );
 
     const linearResult = JSON.parse(stdout);

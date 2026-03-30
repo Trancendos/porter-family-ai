@@ -45,7 +45,7 @@ export interface VercelDeploymentLog {
 export async function listVercelProjects(): Promise<VercelProject[]> {
   try {
     const result = execSync(
-      `manus-mcp-cli tool call list_projects --server vercel --input '{}'`,
+      `trancendos-mcp-cli tool call list_projects --server vercel --input '{}'`,
       { encoding: 'utf-8' }
     );
     const data = JSON.parse(result);
@@ -62,7 +62,7 @@ export async function listVercelProjects(): Promise<VercelProject[]> {
 export async function getVercelDeployments(projectId: string, limit: number = 10): Promise<VercelDeployment[]> {
   try {
     const result = execSync(
-      `manus-mcp-cli tool call list_deployments --server vercel --input '{"project_id":"${projectId}","limit":${limit}}'`,
+      `trancendos-mcp-cli tool call list_deployments --server vercel --input '{"project_id":"${projectId}","limit":${limit}}'`,
       { encoding: 'utf-8' }
     );
     const data = JSON.parse(result);
@@ -79,7 +79,7 @@ export async function getVercelDeployments(projectId: string, limit: number = 10
 export async function getVercelDeploymentLogs(deploymentId: string): Promise<VercelDeploymentLog[]> {
   try {
     const result = execSync(
-      `manus-mcp-cli tool call get_deployment_logs --server vercel --input '{"deployment_id":"${deploymentId}"}'`,
+      `trancendos-mcp-cli tool call get_deployment_logs --server vercel --input '{"deployment_id":"${deploymentId}"}'`,
       { encoding: 'utf-8' }
     );
     const data = JSON.parse(result);

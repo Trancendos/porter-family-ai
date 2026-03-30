@@ -51,7 +51,7 @@ export interface SentryEvent {
 export async function listSentryProjects(): Promise<SentryProject[]> {
   try {
     const result = execSync(
-      `manus-mcp-cli tool call list_projects --server sentry --input '{}'`,
+      `trancendos-mcp-cli tool call list_projects --server sentry --input '{}'`,
       { encoding: 'utf-8' }
     );
     const data = JSON.parse(result);
@@ -68,7 +68,7 @@ export async function listSentryProjects(): Promise<SentryProject[]> {
 export async function getSentryIssues(projectSlug: string, status: 'unresolved' | 'resolved' | 'all' = 'unresolved'): Promise<SentryIssue[]> {
   try {
     const result = execSync(
-      `manus-mcp-cli tool call list_issues --server sentry --input '{"project_slug":"${projectSlug}","status":"${status}"}'`,
+      `trancendos-mcp-cli tool call list_issues --server sentry --input '{"project_slug":"${projectSlug}","status":"${status}"}'`,
       { encoding: 'utf-8' }
     );
     const data = JSON.parse(result);
@@ -85,7 +85,7 @@ export async function getSentryIssues(projectSlug: string, status: 'unresolved' 
 export async function getSentryEvents(issueId: string): Promise<SentryEvent[]> {
   try {
     const result = execSync(
-      `manus-mcp-cli tool call get_issue_events --server sentry --input '{"issue_id":"${issueId}"}'`,
+      `trancendos-mcp-cli tool call get_issue_events --server sentry --input '{"issue_id":"${issueId}"}'`,
       { encoding: 'utf-8' }
     );
     const data = JSON.parse(result);
@@ -102,7 +102,7 @@ export async function getSentryEvents(issueId: string): Promise<SentryEvent[]> {
 export async function resolveSentryIssue(issueId: string): Promise<boolean> {
   try {
     execSync(
-      `manus-mcp-cli tool call resolve_issue --server sentry --input '{"issue_id":"${issueId}"}'`,
+      `trancendos-mcp-cli tool call resolve_issue --server sentry --input '{"issue_id":"${issueId}"}'`,
       { encoding: 'utf-8' }
     );
     return true;
